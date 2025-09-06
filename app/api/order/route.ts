@@ -8,10 +8,6 @@ export async function POST(request: NextRequest) {
       productName,
       quantity,
       shelfLifeDays,
-      unitCost,
-      sellingPrice,
-      category,
-      brand,
       warehouseId
     } = await request.json();
 

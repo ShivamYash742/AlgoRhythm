@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react';
 import { 
   Package, 
-  Clock, 
   AlertTriangle, 
   CheckCircle,
   XCircle,
   Activity,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 
 interface Product {

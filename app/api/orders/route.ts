@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const productId = searchParams.get('productId');
 
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
     if (warehouseId) where.warehouseId = warehouseId;
     if (status) where.status = status;
     if (productId) where.productId = productId;

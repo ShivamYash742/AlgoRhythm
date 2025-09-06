@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const warehouseId = searchParams.get('warehouseId');
 
-    const where: any = {
+    const where: Prisma.ProductWhereInput = {
       OR: [
         { status: 'DEAD_STOCK' },
         { deadStockRisk: { gte: 0.7 } },

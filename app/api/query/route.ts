@@ -15,12 +15,21 @@ export async function POST(request: NextRequest) {
 
     // Check if Gemini API key is available
     const geminiApiKey = process.env.GEMINI_API_KEY;
+    console.log('Gemini API Key check:', {
+      hasKey: !!geminiApiKey,
+      keyLength: geminiApiKey?.length,
+      keyStart: geminiApiKey?.substring(0, 10) + '...'
+    });
     
     if (!geminiApiKey || geminiApiKey === 'your-gemini-api-key-here') {
       return NextResponse.json({
         success: false,
         error: 'Gemini API key not configured',
-        message: 'Please add your Gemini API key to the .env file'
+        message: 'Please add your Gemini API key to the .env file',
+        debug: {
+          hasKey: !!geminiApiKey,
+          keyLength: geminiApiKey?.length
+        }
       });
     }
 
@@ -60,20 +69,23 @@ async function convertToSQL(humanQuery: string, apiKey: string): Promise<string 
     const prompt = `
 You are a SQL expert for a warehouse management system. Convert the following human language query to SQL.
 
-Database Schema:
-- Warehouse: id, location, capacity, usedCapacity, createdAt, updatedAt
-- Product: id, name, quantity, selfLife, status, warehouseId, createdAt, updatedAt
-- Order: id, productId, quantityOrdered, orderDate, createdAt, updatedAt
+Database Schema (PostgreSQL):
+- warehouses: id (cuid), location, capacity, usedCapacity, createdAt, updatedAt
+- products: id (cuid), name, quantity, selfLife (DateTime), status (enum), warehouseId, createdAt, updatedAt
+- orders: id (cuid), productId, warehouseId, quantityOrdered, orderDate, createdAt, updatedAt
 
 Relationships:
-- Product belongs to Warehouse (warehouseId)
-- Order belongs to Product (productId)
+- products.warehouseId -> warehouses.id
+- orders.productId -> products.id
+- orders.warehouseId -> warehouses.id
 
-Status values: "ACTIVE", "LOW_SHELF_LIFE", "DEAD_STOCK"
+Status enum values: "ACTIVE", "LOW_SHELF_LIFE", "DEAD_STOCK"
+
+Table names: warehouses, products, orders
 
 Human Query: "${humanQuery}"
 
-Return ONLY the SQL query, no explanations or additional text. Use SQLite syntax.
+Return ONLY the SQL query, no explanations or additional text. Use PostgreSQL syntax.
 `;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
@@ -91,11 +103,16 @@ Return ONLY the SQL query, no explanations or additional text. Use SQLite syntax
     });
 
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Gemini API error:', response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Gemini API response:', JSON.stringify(data, null, 2));
+    
     const sqlQuery = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    console.log('Generated SQL:', sqlQuery);
 
     return sqlQuery || null;
 
@@ -108,12 +125,16 @@ Return ONLY the SQL query, no explanations or additional text. Use SQLite syntax
 // Function to execute SQL query using Prisma
 async function executeSQLQuery(sqlQuery: string) {
   try {
+    console.log('Executing SQL query:', sqlQuery);
+    
     // For security, we'll use Prisma's raw query method
     // This allows us to execute custom SQL while maintaining safety
     const results = await prisma.$queryRawUnsafe(sqlQuery);
+    console.log('Query results:', results);
+    
     return results;
   } catch (error) {
     console.error('Error executing SQL query:', error);
-    throw new Error('Invalid SQL query or database error');
+    throw new Error(`SQL execution error: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

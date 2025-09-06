@@ -3,15 +3,11 @@
 import { useState, useEffect } from 'react';
 import { 
   Package, 
-  Clock, 
-  AlertTriangle, 
   TrendingUp,
   CheckCircle,
   AlertCircle,
   XCircle,
   Activity,
-  BarChart3,
-  Filter,
   Search
 } from 'lucide-react';
 
@@ -39,6 +35,21 @@ interface WarehouseStats {
   deadStockCount: number;
   expiredCount: number;
   utilizationPercentage: number;
+}
+
+interface ApiProduct {
+  id: string;
+  name: string;
+  quantity: number;
+  status: string;
+  daysUntilExpiry: number;
+  isExpired: boolean;
+  costPrice: number;
+  sellingPrice: number;
+  category: string;
+  brand: string;
+  createdAt: string;
+  selfLife: string;
 }
 
 export default function DashboardPage() {

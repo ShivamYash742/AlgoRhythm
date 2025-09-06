@@ -96,7 +96,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   try {
     const { isRead, isResolved, resolvedBy } = await request.json();
     
-    const updateData: any = {};
+    const updateData: Prisma.AlertUpdateInput = {};
     if (isRead !== undefined) updateData.isRead = isRead;
     if (isResolved !== undefined) {
       updateData.isResolved = isResolved;

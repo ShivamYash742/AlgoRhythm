@@ -7,7 +7,7 @@ interface QueryResult {
   success: boolean;
   originalQuery: string;
   sqlQuery: string;
-  results: any[];
+  results: Record<string, string | number | boolean | null>[];
   message: string;
   error?: string;
 }
@@ -36,6 +36,7 @@ export default function NaturalLanguageQuery() {
       const data = await response.json();
       setResult(data);
     } catch (error) {
+      console.error('Error processing query:', error);
       setResult({
         success: false,
         originalQuery: query,
@@ -137,7 +138,7 @@ export default function NaturalLanguageQuery() {
                 <div>
                   <p className="text-sm font-medium text-gray-700">Your Question:</p>
                   <p className="text-sm text-gray-900 bg-white p-2 rounded border">
-                    "{result.originalQuery}"
+                    &quot;{result.originalQuery}&quot;
                   </p>
                 </div>
 

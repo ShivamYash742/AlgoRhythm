@@ -8,7 +8,6 @@ import {
   CheckCircle,
   XCircle,
   Bell,
-  Filter,
   Search
 } from 'lucide-react';
 

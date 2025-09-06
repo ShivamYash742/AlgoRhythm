@@ -67,7 +67,7 @@ export default function HomePage() {
           });
           
           // Convert products to the expected format
-          const recentProducts = data.products.slice(0, 5).map((product: any) => ({
+          const recentProducts = data.products.slice(0, 5).map((product: ApiProduct) => ({
             id: product.id,
             name: product.name,
             sku: product.id.substring(0, 8), // Use part of ID as SKU
