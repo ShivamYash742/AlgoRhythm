@@ -68,7 +68,7 @@ export default function HomePage() {
         const data = await response.json();
         
         if (data.success) {
-          // Calculate total value using dynamic pricing from API
+          // Calculate value using dynamic pricing from API
           const totalValue = data.products.reduce((sum: number, product: ApiProduct) => 
             sum + (product.quantity * (product.sellingPrice || 4.00)), 0);
           
