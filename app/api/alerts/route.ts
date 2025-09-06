@@ -107,7 +107,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     const alert = await prisma.alert.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: updateData
     });
 
