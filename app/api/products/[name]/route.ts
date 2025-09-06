@@ -36,14 +36,14 @@ export async function GET(
     }
 
     // Find the product with the oldest shelf life (most urgent)
-    const oldestProduct = products.reduce((oldest: any, current: any) => {
+    const oldestProduct = products.reduce((oldest, current) => {
       return current.selfLife < oldest.selfLife ? current : oldest;
     });
 
     const daysUntilExpiry = Math.ceil((oldestProduct.selfLife.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     
     // Calculate total quantity across all warehouses
-    const totalQuantity = products.reduce((sum: number, product: any) => sum + product.quantity, 0);
+    const totalQuantity = products.reduce((sum: number, product) => sum + product.quantity, 0);
 
     return NextResponse.json({
       success: true,
@@ -61,7 +61,7 @@ export async function GET(
         sellingPrice: Math.round((Math.random() * 8 + 3) * 100) / 100,
         category: ['Dairy', 'Produce', 'Canned Goods', 'Frozen', 'Bakery', 'Beverages'][Math.floor(Math.random() * 6)],
         brand: ['Premium', 'Organic', 'Local', 'Brand A', 'Brand B', 'Generic'][Math.floor(Math.random() * 6)],
-        warehouses: products.map((p: any) => ({
+        warehouses: products.map((p) => ({
           id: p.warehouse.id,
           location: p.warehouse.location,
           quantity: p.quantity,

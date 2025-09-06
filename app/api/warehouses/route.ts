@@ -11,14 +11,14 @@ export async function GET() {
     });
 
     // Calculate warehouse statistics
-    const warehousesWithStats = warehouses.map((warehouse: any) => {
+    const warehousesWithStats = warehouses.map((warehouse) => {
       const totalProducts = warehouse.products.length;
-      const totalQuantity = warehouse.products.reduce((sum: number, product: any) => sum + product.quantity, 0);
-      const lowShelfLifeCount = warehouse.products.filter((product: any) => {
+      const totalQuantity = warehouse.products.reduce((sum: number, product) => sum + product.quantity, 0);
+      const lowShelfLifeCount = warehouse.products.filter((product) => {
         const daysUntilExpiry = Math.ceil((product.selfLife.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
       }).length;
-      const deadStockCount = warehouse.products.filter((product: any) => product.status === 'DEAD_STOCK').length;
+      const deadStockCount = warehouse.products.filter((product) => product.status === 'DEAD_STOCK').length;
 
       return {
         ...warehouse,

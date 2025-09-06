@@ -19,24 +19,24 @@ export async function GET() {
     });
 
     // Calculate dashboard statistics
-    const allProducts = warehouses.flatMap((warehouse: any) => warehouse.products);
+    const allProducts = warehouses.flatMap((warehouse) => warehouse.products);
     
     const stats = {
       totalProducts: allProducts.length,
-      totalQuantity: allProducts.reduce((sum: number, product: any) => sum + product.quantity, 0),
-      lowShelfLifeCount: allProducts.filter((product: any) => {
+      totalQuantity: allProducts.reduce((sum: number, product) => sum + product.quantity, 0),
+      lowShelfLifeCount: allProducts.filter((product) => {
         const daysUntilExpiry = Math.ceil((product.selfLife.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
       }).length,
-      deadStockCount: allProducts.filter((product: any) => product.status === 'DEAD_STOCK').length,
-      activeCount: allProducts.filter((product: any) => product.status === 'ACTIVE').length,
-      lowShelfLifeStatusCount: allProducts.filter((product: any) => product.status === 'LOW_SHELF_LIFE').length
+      deadStockCount: allProducts.filter((product) => product.status === 'DEAD_STOCK').length,
+      activeCount: allProducts.filter((product) => product.status === 'ACTIVE').length,
+      lowShelfLifeStatusCount: allProducts.filter((product) => product.status === 'LOW_SHELF_LIFE').length
     };
 
     // Add calculated fields to products
-    const productsWithCalculations = allProducts.map((product: any) => {
+    const productsWithCalculations = allProducts.map((product) => {
       const daysUntilExpiry = Math.ceil((product.selfLife.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-      const warehouse = warehouses.find((w: any) => w.id === product.warehouseId);
+      const warehouse = warehouses.find((w) => w.id === product.warehouseId);
       
       return {
         ...product,
@@ -52,7 +52,7 @@ export async function GET() {
     });
 
     // Calculate warehouse utilization
-    const warehouseUtilization = warehouses.map((warehouse: any) => ({
+    const warehouseUtilization = warehouses.map((warehouse) => ({
       id: warehouse.id,
       location: warehouse.location,
       utilizationPercentage: Math.round((warehouse.usedCapacity / warehouse.capacity) * 100)
