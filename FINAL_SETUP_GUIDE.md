@@ -132,12 +132,22 @@ Visit: `http://localhost:3000/api/test-db`
 
 Your `.env` file should contain:
 ```env
-DATABASE_URL="postgresql://postgres:password@host:5432/database"
-GEMINI_API_KEY="AIzaSyDlnDrCfQGjmjZHpZ0v-JcBGc0UcL2Yivs"
+# Database Configuration - Replace with your actual connection string
+DATABASE_URL="postgresql://postgres:your_password@your_host:5432/your_database"
+
+# Gemini API Key - Replace with your actual API key
+GEMINI_API_KEY="your_gemini_api_key_here"
+
+# Environment Configuration
 NODE_ENV="development"
-NEXTAUTH_SECRET="JW8TzGY9ws4aX2lYxWRNpWeRtx+6i4KHRbmYdbwIU6s="
+NEXTAUTH_SECRET="your_nextauth_secret_here"
 NEXTAUTH_URL="http://localhost:3000"
 ```
+
+**⚠️ IMPORTANT SECURITY NOTE:**
+- Never commit your `.env` file to version control
+- Replace all placeholder values with your actual credentials
+- Keep your API keys secure and private
 
 ## 🚀 **Ready to Deploy**
 
