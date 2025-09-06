@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "AI-powered warehouse inventory management system with ML predictions and automated notifications",
 };
 
+import Navigation from './components/Navigation';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Navigation />
+        <main className="min-h-screen bg-gray-50">
+          {children}
+        </main>
       </body>
     </html>
   );

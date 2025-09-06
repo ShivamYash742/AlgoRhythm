@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,125 +7,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Enum for the status of a product based on its risk of becoming dead stock.
+// ===== ENUMS =====
+
+/// Product status based on shelf life and dead stock risk
 enum ProductStatus {
-  HEALTHY
-  AT_RISK
+  ACTIVE
+  LOW_SHELF_LIFE
   DEAD_STOCK
 }
 
-/// Enum for the type of a recommendation.
-enum RecommendationType {
-  DISCOUNT
-  BUNDLE
-  PROMOTION
-  RETURN_TO_VENDOR
-  LIQUIDATE
-  MARKETPLACE_SALE
-}
+// ===== MAIN MODELS =====
 
-/// Enum for the type of an alert.
-enum AlertType {
-  PREDICTIVE_RISK
-  LOW_STOCK
-  HIGH_STOCK
-  PERFORMANCE_ISSUE
-}
-
-/// Represents a seller or a user of the platform.
-model User {
-  id                    String                @id @default(uuid())
-  email                 String                @unique
-  name                  String?
-  companyName           String?
-  passwordHash          String                // Stores a hashed password for security.
-  createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
+/// Warehouse model - represents physical warehouse locations
+model Warehouse {
+  id                String    @id @default(cuid())
+  location          String
+  capacity          Int       // Total storage capacity in units
+  usedCapacity      Int       @default(0) // Currently used capacity
   
-  products              Product[]
-  naturalLanguageQueries NaturalLanguageQuery[]
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relationships
+  products          Product[]
+  orders            Order[]
+  
+  @@map("warehouses")
 }
 
-/// Represents an item in a seller's inventory.
+/// Product model - represents inventory items
 model Product {
-  id                    String            @id @default(uuid())
-  sku                   String            @unique // Stock Keeping Unit, a unique identifier for the product.
-  name                  String
-  description           String?
-  cost                  Float             // The cost of acquiring the product.
-  price                 Float             // The selling price of the product.
-  currentStock          Int               @default(0)
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  id                String        @id @default(cuid())
+  name              String
+  quantity          Int           @default(0)
+  selfLife          DateTime      // The expiration date or shelf-life
+  status            ProductStatus @default(ACTIVE)
   
-  // Predictive Analytics fields
-  deadStockRisk         Float             @default(0) // A value from 0 to 1 indicating risk, calculated by the AI engine.
-  status                ProductStatus     @default(HEALTHY)
+  // Timestamps
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   
   // Relationships
-  userId                String
-  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  warehouseId       String
+  warehouse         Warehouse     @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   
-  sales                 Sale[]
-  alerts                Alert[]
-  recommendations       Recommendation[]
+  orders            Order[]
   
-  @@index([userId, sku])
+  @@index([warehouseId])
+  @@index([name])
+  @@map("products")
 }
 
-/// Represents a sales transaction for a product. This data feeds the AI engine.
-model Sale {
-  id                    String   @id @default(uuid())
-  quantitySold          Int
-  totalRevenue          Float
-  saleDate              DateTime @default(now())
+/// Order model - tracks every order placed
+model Order {
+  id                String        @id @default(cuid())
+  productId         String
+  warehouseId       String
+  quantityOrdered   Int
+  orderDate         DateTime      @default(now())
+  
+  // Timestamps
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   
   // Relationships
-  productId             String
-  product               Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  @@index([productId, saleDate])
-}
-
-/// Represents a predictive alert for a product.
-model Alert {
-  id                    String    @id @default(uuid())
-  message               String
-  type                  AlertType
-  createdAt             DateTime  @default(now())
-  
-  // Relationships
-  productId             String
-  product               Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  @@index([productId, createdAt])
-}
-
-/// Represents an actionable recommendation from the AI engine.
-model Recommendation {
-  id                  String             @id @default(uuid())
-  strategy            RecommendationType
-  suggestedAction     String             // A description of the suggested action (e.g., "Apply a 20% discount").
-  financialImpact     Float?             // The estimated financial impact in currency units.
-  createdAt           DateTime           @default(now())
-  
-  // Relationships
-  productId           String
-  product             Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product           Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse         Warehouse     @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   
   @@index([productId])
-}
-
-/// Represents a user's natural language query to the AI.
-model NaturalLanguageQuery {
-  id          String   @id @default(uuid())
-  queryText   String
-  responseText String? // The response generated by the AI.
-  createdAt   DateTime @default(now())
-  
-  // Relationships
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
+  @@index([warehouseId])
+  @@index([orderDate])
+  @@map("orders")
 }
