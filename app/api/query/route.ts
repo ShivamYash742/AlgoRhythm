@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 // POST /api/query - Convert human language to SQL and execute
 export async function POST(request: NextRequest) {
