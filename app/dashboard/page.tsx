@@ -77,7 +77,7 @@ export default function DashboardPage() {
         
         if (data.success) {
           // Convert products to the expected format using dynamic data from API
-          const productsData: Product[] = data.products.map((product: any) => ({
+          const productsData: Product[] = data.products.map((product: ApiProduct) => ({
             id: product.id,
             name: product.name,
             sku: product.id.substring(0, 8), // Use part of ID as SKU

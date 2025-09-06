@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority');
     const isResolved = searchParams.get('isResolved');
 
-    const where: any = {};
+    const where: Prisma.AlertWhereInput = {};
     if (warehouseId) where.warehouseId = warehouseId;
     if (productId) where.productId = productId;
     if (type) where.type = type;

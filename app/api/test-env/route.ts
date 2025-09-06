@@ -20,6 +20,7 @@ export async function GET() {
       }
     });
   } catch (error) {
+    console.error('Error in test-env route:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to check environment variables' },
       { status: 500 }
