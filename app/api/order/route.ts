@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
       const order = await prisma.order.create({
         data: {
           productId: existingProduct.id,
+          warehouseId: warehouseId,
           quantityOrdered: quantity
         }
       });
@@ -144,6 +145,7 @@ export async function POST(request: NextRequest) {
       const order = await prisma.order.create({
         data: {
           productId: newProduct.id,
+          warehouseId: warehouseId,
           quantityOrdered: quantity
         }
       });

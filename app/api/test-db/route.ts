@@ -26,8 +26,8 @@ export async function GET() {
     console.error("Database connection test failed:", error);
     return Response.json({
       success: false,
-      error: error.message,
-      stack: error.stack,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
       envVars: {
         databaseUrl: process.env.DATABASE_URL ? "Set" : "Not set",
         geminiApiKey: process.env.GEMINI_API_KEY ? "Set" : "Not set",
